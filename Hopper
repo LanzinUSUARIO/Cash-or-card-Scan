@@ -12,7 +12,9 @@ vim:SendKeyEvent(false, Enum.KeyCode.F9, false, game)
 if not game:IsLoaded() then game.Loaded:Wait() end
 task.wait(3)
 
--- CONFIGURAÇÕES
+-- ══════════════════════════════════════════════════════
+--   CONFIGURAÇÕES
+-- ══════════════════════════════════════════════════════
 local WEBHOOK_URL   = "https://discordapp.com/api/webhooks/1512269934338510999/VUqgpMu0nTYsJTDCDnOkjOCMlV4GgsTjKw9vIkh6GHFol1wm8P0fUu-2Y0iyLGb6G0Qa"
 local WEBHOOK_MID   = "https://discordapp.com/api/webhooks/1512270018287636501/p5ScZFT231dMlGwqe1cGrmLuVir9m4p7TIBeIjORiRvAGDZq3BXvoEKcWdP5V4QdQonl"
 local WEBHOOK_HIGH  = "https://discordapp.com/api/webhooks/1512275833908367460/794Pv6HXDAZLXL5kW1OCLY1uEPKN1jPodr4-9RS9H_f1hpPHfcQDDbc91iNmGM6p6JTH"
@@ -22,6 +24,13 @@ local WEBHOOK_LUCKY = "https://discord.com/api/webhooks/1499522287244804097/AqvK
 local WEBHOOK_EVENT = "https://discord.com/api/webhooks/1499522427108065416/wbTB2sYUOXdcl-8JeFlQd_pCgKbJ2ZhzDBexqtdrErZwLvaw1krUIFYEOJCV0bGkIOJs"
 local WEBHOOK_BAD   = "https://discord.com/api/webhooks/1499522982337577024/_ipXxeb2DDFos2vunVChd3LHxD5uk8ilXY8-lImxwb9pNrVYYy5e-MvkH_1yCf3KpbQ-"
 local FIREBASE_URL  = ""
+
+-- ══════════════════════════════════════════════════════
+--   RAILWAY API
+-- ══════════════════════════════════════════════════════
+local RAILWAY_URL    = "https://cash-or-card-notifier-production.up.railway.app"  -- << TROQUE
+local RAILWAY_SECRET = "CashOrCard"             -- << igual ao SCRIPT_SECRET da sua API
+local RAILWAY_HEADER = "CashCardNotifier-v1"                    -- << igual ao CLIENT_HEADER da sua API
 
 local TARGET_NAMES    = {""}
 local ULTRA_BRAINROTS = {
@@ -33,7 +42,6 @@ local ULTRA_BRAINROTS = {
     "Foxini Lanternini", "La Casa Boo", "La Food Combinasion",
     "Headless Horseman", "Dragon Gingerini", "Signore Carapace",
 }
-
 local HIGH_BRAINROTS = {
     "Garama", "Burguro", "Capitano", "Cash Or Card", "Guest 666", "John Doe",
     "Los Hotspotsitos", "Celularcini Viciosini", "Gym Bros", "Jolly Jolly Sahur",
@@ -43,15 +51,15 @@ local HIGH_BRAINROTS = {
     "Fortunu And Cashuru", "Popuru And Fizzuru", "Digi Narwhal",
     "La Secret Combinasion", "Los Sekolahs",
 }
-
 local EVENT_BRAINROTS = {
     "Dul Dul Dul", "Guerriro Digitale", "Orcalero Orcala",
     "La Vacca Saturno Saturnita", "1x1x1x1", "Sammyni Spyderini",
     "Matteooooooooooooooo", "Chicleteira Bicicleteira", "Bombardiro Crocodilo",
 }
-
-local BLACK_NAMES = {"Fishboard", "Tob Tobi Tobi", "Lucky Block", "La Vacca Saturno Saturnita", "Bombardiro Crocodilo", "Sammyni Spyderini", "Dul Dul Dul", "Guerriro Digitale", "Orcalero Orcala",  }
-
+local BLACK_NAMES = {
+    "Fishboard", "Tob Tobi Tobi", "Lucky Block", "La Vacca Saturno Saturnita",
+    "Bombardiro Crocodilo", "Sammyni Spyderini", "Dul Dul Dul", "Guerriro Digitale", "Orcalero Orcala",
+}
 local GOD_BRAINROTS = {
     "Tob Tobi Tobi", "Ganganzelli Trulala", "Brutto Gialutto", "Centrucci Nuclucci",
     "Rhino Helicopterino", "Trenostruzzo Turbo 4000", "Ginger Cisterna",
@@ -59,7 +67,6 @@ local GOD_BRAINROTS = {
     "Pineaplino", "Racooni Jandelini", "Raccooni Jandelini", "Fishino Clownino",
     "Gobblino Uniciclino", "Stoppo Luminino", "Unclito Samito",
 }
-
 local LUCKY_BLOCKS = {
     "Lucky Block", "Admin Lucky Block", "Los Lucky Blocks", "Taco Lucky Block",
     "Los Taco Blocks", "Spooky Lucky Block", "Festive Lucky Block",
@@ -69,17 +76,56 @@ local LUCKY_BLOCKS = {
 }
 
 local MIN_VALUE     = 30000000
-local NOTIFIER_NAME = "cashOrCard"
 local CURRENT_JOB   = tostring(game.JobId)
 local PLACE_ID      = game.PlaceId
 local EMBED_COLOR   = 2370601
-
-local LocalPlayer = Players.LocalPlayer
+local LocalPlayer   = Players.LocalPlayer
 
 print("Players: " .. tostring(#Players:GetPlayers()))
 
 local http_request = http_request or (syn and syn.request) or (http and http.request) or request
 
+-- ══════════════════════════════════════════════════════
+--   RAILWAY — ENVIO
+-- ══════════════════════════════════════════════════════
+local function sendToRailway(name, value, mutation, traits, tier, ownerName, jobId, inDuel)
+    local ok, body = pcall(function()
+        return HttpService:JSONEncode({
+            secret    = RAILWAY_SECRET,
+            name      = name      or "Unknown",
+            value     = value     or 0,
+            mutation  = mutation  or "Normal",
+            traits    = traits    or {},
+            tier      = tier      or "MID",
+            ownerName = ownerName or "?",
+            jobId     = jobId     or "",
+            placeId   = tostring(PLACE_ID),
+            inDuel    = inDuel    or false,
+            scanner   = LocalPlayer.Name,
+        })
+    end)
+    if not ok then warn("Railway encode error:", body) return end
+    local success, response = pcall(function()
+        return http_request({
+            Url     = RAILWAY_URL .. "/api/report",
+            Method  = "POST",
+            Headers = {
+                ["Content-Type"]      = "application/json",
+                ["X-CashCard-Client"] = RAILWAY_HEADER,
+            },
+            Body = body,
+        })
+    end)
+    if success and response then
+        print("📡 Railway OK:", name, "| Status:", response.StatusCode)
+    else
+        warn("📡 Railway FALHOU:", tostring(response))
+    end
+end
+
+-- ══════════════════════════════════════════════════════
+--   HOP
+-- ══════════════════════════════════════════════════════
 local function hop(label)
     print("🚀 Iniciando Hop: " .. (label or "Scan"))
     local function doHop()
@@ -108,19 +154,18 @@ local function hop(label)
     end)
 end
 
-TeleportService.TeleportInitFailed:Connect(function()
-    hop("Retry")
-end)
+TeleportService.TeleportInitFailed:Connect(function() hop("Retry") end)
 
+-- ══════════════════════════════════════════════════════
+--   MÓDULOS
+-- ══════════════════════════════════════════════════════
 local Synchronizer  = nil
 local AnimalsData   = nil
 local AnimalsShared = nil
 
 do
     local function tryLoad(parent, name)
-        local ok, result = pcall(function()
-            return require(parent:WaitForChild(name, 5))
-        end)
+        local ok, result = pcall(function() return require(parent:WaitForChild(name, 5)) end)
         return ok and result or nil
     end
     local ok_pkg, Packages = pcall(function() return RS:WaitForChild("Packages", 5) end)
@@ -131,16 +176,9 @@ do
     if ok_sh  and Shared   then AnimalsShared = tryLoad(Shared,   "Animals")      end
 end
 
-local function parseValue(text)
-    if not text then return 0 end
-    local clean = tostring(text):gsub("[%$%s%,%/s%/m%/h]", "")
-    local numStr, suf = clean:match("([%d%.]+)(%a?)")
-    if not numStr then return 0 end
-    local n = tonumber(numStr) or 0
-    local mult = ({K=1e3, M=1e6, B=1e9, T=1e12})[(suf or ""):upper()] or 1
-    return n * mult
-end
-
+-- ══════════════════════════════════════════════════════
+--   UTILITÁRIOS
+-- ══════════════════════════════════════════════════════
 local function formatValue(n)
     if n >= 1e12 then return string.format("%.1fT", n/1e12) end
     if n >= 1e9  then return string.format("%.1fB", n/1e9)  end
@@ -151,154 +189,87 @@ end
 
 local function isBlacklisted(itemName)
     local low = itemName:lower()
-    for _, b in ipairs(BLACK_NAMES) do
-        if b ~= "" and low:find(b:lower()) then return true end
-    end
+    for _, b in ipairs(BLACK_NAMES) do if b ~= "" and low:find(b:lower()) then return true end end
     return false
 end
-
 local function isTargeted(itemName)
     local low = itemName:lower()
-    for _, t in ipairs(TARGET_NAMES) do
-        if t ~= "" and low:find(t:lower()) then return true end
-    end
+    for _, t in ipairs(TARGET_NAMES) do if t ~= "" and low:find(t:lower()) then return true end end
     return false
 end
-
 local function isUltra(name)
     local low = name:lower()
-    for _, u in ipairs(ULTRA_BRAINROTS) do
-        if u ~= "" and low == u:lower() then return true end
-    end
+    for _, u in ipairs(ULTRA_BRAINROTS) do if u ~= "" and low == u:lower() then return true end end
     return false
 end
-
 local function isHighBrainrot(name)
     local low = name:lower()
-    for _, h in ipairs(HIGH_BRAINROTS) do
-        if h ~= "" and low == h:lower() then return true end
-    end
+    for _, h in ipairs(HIGH_BRAINROTS) do if h ~= "" and low == h:lower() then return true end end
     return false
 end
-
 local function isGodBrainrot(name)
     local low = name:lower()
-    for _, g in ipairs(GOD_BRAINROTS) do
-        if g ~= "" and low == g:lower() then return true end
-    end
+    for _, g in ipairs(GOD_BRAINROTS) do if g ~= "" and low == g:lower() then return true end end
     return false
 end
-
 local function isLuckyBlock(name)
     if not name then return false end
     local low = name:lower()
-    for _, l in ipairs(LUCKY_BLOCKS) do
-        if l ~= "" and low == l:lower() then return true end
-    end
+    for _, l in ipairs(LUCKY_BLOCKS) do if l ~= "" and low == l:lower() then return true end end
     if low:find("lucky block", 1, true) then return true end
     return false
 end
-
 local function isEventBrainrot(name)
     local low = name:lower()
-    for _, e in ipairs(EVENT_BRAINROTS) do
-        if e ~= "" and low == e:lower() then return true end
-    end
+    for _, e in ipairs(EVENT_BRAINROTS) do if e ~= "" and low == e:lower() then return true end end
     return false
 end
-
 local function shouldScan(name, genValue)
     if isBlacklisted(name) then return false end
     return genValue >= MIN_VALUE or isTargeted(name) or isUltra(name) or isHighBrainrot(name) or isGodBrainrot(name) or isLuckyBlock(name) or isEventBrainrot(name)
 end
-
 local function resolveOwnerName(owner)
     if not owner then return nil end
     if typeof(owner) == "Instance" and owner:IsA("Player") then return owner.Name end
     if typeof(owner) == "table" then
         if owner.Name and owner.Name ~= "" then return owner.Name end
         if owner.UserId then
-            for _, p in ipairs(Players:GetPlayers()) do
-                if p.UserId == owner.UserId then return p.Name end
-            end
+            for _, p in ipairs(Players:GetPlayers()) do if p.UserId == owner.UserId then return p.Name end end
             return tostring(owner.UserId)
         end
-    elseif typeof(owner) == "Instance" then
-        return owner.Name
-    end
+    elseif typeof(owner) == "Instance" then return owner.Name end
     return nil
 end
-
 local function isFusing(animalData)
-    if animalData.Machine then
-        if animalData.Machine.Type == "Fuse" and animalData.Machine.Active then return true end
-    end
+    if animalData.Machine then if animalData.Machine.Type == "Fuse" and animalData.Machine.Active then return true end end
     return false
 end
-
 local function isInDuel(animalData)
     local data = animalData.Data or animalData
-    if animalData.Machine and type(animalData.Machine) == "table" then
-        local mType = animalData.Machine.Type
-        if type(mType) == "string" and mType:lower():find("duel") then return true end
-    end
-    if data and type(data) == "table" and data.Machine and type(data.Machine) == "table" then
-        local mType = data.Machine.Type
-        if type(mType) == "string" and mType:lower():find("duel") then return true end
-    end
+    if animalData.Machine and type(animalData.Machine) == "table" then local mType = animalData.Machine.Type; if type(mType) == "string" and mType:lower():find("duel") then return true end end
+    if data and type(data) == "table" and data.Machine and type(data.Machine) == "table" then local mType = data.Machine.Type; if type(mType) == "string" and mType:lower():find("duel") then return true end end
     if animalData.InDuel == true or animalData.inDuel == true or animalData.in_duel == true then return true end
-    if type(data) == "table" then
-        if data.InDuel == true or data.inDuel == true then return true end
-    end
+    if type(data) == "table" then if data.InDuel == true or data.inDuel == true then return true end end
     return false
 end
-
 local function cameBackFromDuel(player)
-    if player == LocalPlayer then
-        local ok, data = pcall(function() return TeleportService:GetLocalPlayerTeleportData() end)
-        if ok and type(data) == "table" then
-            if data.fromDuel or data.DuelData or data.duel then return true end
-        end
-    end
-    for _, child in ipairs(player:GetChildren()) do
-        local nameLower = child.Name:lower()
-        if nameLower:find("duel") or nameLower:find("returned") then return true end
-    end
+    if player == LocalPlayer then local ok, data = pcall(function() return TeleportService:GetLocalPlayerTeleportData() end); if ok and type(data) == "table" then if data.fromDuel or data.DuelData or data.duel then return true end end end
+    for _, child in ipairs(player:GetChildren()) do local nameLower = child.Name:lower(); if nameLower:find("duel") or nameLower:find("returned") then return true end end
     local attrOk, attrs = pcall(function() return player:GetAttributes() end)
-    if attrOk and attrs then
-        for key, val in pairs(attrs) do
-            if key:lower():find("duel") or key:lower():find("returned") then
-                if val == true or val == 1 then return true end
-            end
-        end
-    end
+    if attrOk and attrs then for key, val in pairs(attrs) do if key:lower():find("duel") or key:lower():find("returned") then if val == true or val == 1 then return true end end end end
     return false
 end
-
 local function getDuelPlayers()
     local duelPlayers = {}
-    for _, player in ipairs(Players:GetPlayers()) do
-        if cameBackFromDuel(player) then
-            duelPlayers[player.Name]             = true
-            duelPlayers[tostring(player.UserId)] = true
-        end
-    end
+    for _, player in ipairs(Players:GetPlayers()) do if cameBackFromDuel(player) then duelPlayers[player.Name] = true; duelPlayers[tostring(player.UserId)] = true end end
     return duelPlayers
 end
-
 local function getPlotOwner(plot)
     local ownerAttr = plot:GetAttribute("Owner") or plot:GetAttribute("PlayerName")
-    if ownerAttr then
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p.Name == tostring(ownerAttr) or tostring(p.UserId) == tostring(ownerAttr) then return p end
-        end
-    end
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p.Name == plot.Name then return p end
-    end
+    if ownerAttr then for _, p in ipairs(Players:GetPlayers()) do if p.Name == tostring(ownerAttr) or tostring(p.UserId) == tostring(ownerAttr) then return p end end end
+    for _, p in ipairs(Players:GetPlayers()) do if p.Name == plot.Name then return p end end
     return nil
 end
-
 local function isPlotOwnerInDuel(plot, duelPlayers)
     local owner = plot:GetAttribute("Owner") or plot:GetAttribute("PlayerName") or plot.Name
     if duelPlayers[owner] or duelPlayers[tostring(owner)] then return true end
@@ -308,7 +279,6 @@ local function isPlotOwnerInDuel(plot, duelPlayers)
 end
 
 local loggedKeys = {}
-
 local function hasBeenLogged(jobId, name, genText)
     local key = jobId .. "|" .. name .. "|" .. genText
     if loggedKeys[key] then return true end
@@ -316,318 +286,145 @@ local function hasBeenLogged(jobId, name, genText)
     return false
 end
 
+-- ══════════════════════════════════════════════════════
+--   SCAN PLOTS
+-- ══════════════════════════════════════════════════════
 local function scanPlots(duelPlayers, seen, currentJobId)
     local results = {}
     local plots = Workspace:FindFirstChild("Plots")
     if not plots then return results end
-
     for _, plot in ipairs(plots:GetChildren()) do
         local ok, pot = pcall(function() return Synchronizer:Get(plot.Name) end)
         if not ok or not pot then continue end
-
         local ok2, list = pcall(function() return pot:Get("AnimalList") end)
         if not ok2 or type(list) ~= "table" then continue end
-
         local syncOwner = nil
         local ownerOk, ownerVal = pcall(function() return pot:Get("Owner") end)
-        if ownerOk and ownerVal ~= nil then
-            syncOwner = type(ownerVal) == "string" and ownerVal or tostring(ownerVal)
-        end
-
+        if ownerOk and ownerVal ~= nil then syncOwner = type(ownerVal) == "string" and ownerVal or tostring(ownerVal) end
         local plotDuel = false
-        if syncOwner and duelPlayers[syncOwner] then
-            plotDuel = true
-        else
-            plotDuel = isPlotOwnerInDuel(plot, duelPlayers)
-        end
-
+        if syncOwner and duelPlayers[syncOwner] then plotDuel = true
+        else plotDuel = isPlotOwnerInDuel(plot, duelPlayers) end
         local ownerName = syncOwner or resolveOwnerName(ownerVal) or "?"
         local plotItems = {}
         local plotHasQualifying = false
-
         for _, animalData in pairs(list) do
             if type(animalData) ~= "table" then continue end
             if isFusing(animalData) then continue end
-
             local name = animalData.Index
             if not name then continue end
             if not AnimalsData or not AnimalsData[name] then continue end
-
             local inDuel   = isInDuel(animalData) or plotDuel
             local data     = animalData.Data or animalData
             local mutation = data.Mutation
             if type(mutation) ~= "string" or mutation == "" then mutation = nil end
-
             local traitsTable = nil
             local traitsList  = {}
             if type(data.Traits) == "table" then
                 traitsTable = {}
                 if #data.Traits > 0 then
-                    for _, trait in ipairs(data.Traits) do
-                        if type(trait) == "string" then
-                            table.insert(traitsTable, trait)
-                            table.insert(traitsList, trait)
-                        end
-                    end
+                    for _, trait in ipairs(data.Traits) do if type(trait) == "string" then table.insert(traitsTable, trait); table.insert(traitsList, trait) end end
                 else
-                    for traitName, enabled in pairs(data.Traits) do
-                        if enabled then
-                            table.insert(traitsTable, traitName)
-                            table.insert(traitsList, traitName)
-                        end
-                    end
+                    for traitName, enabled in pairs(data.Traits) do if enabled then table.insert(traitsTable, traitName); table.insert(traitsList, traitName) end end
                 end
                 if #traitsTable == 0 then traitsTable = nil end
             end
-
-            local ok3, genValue = pcall(function()
-                return AnimalsShared:GetGeneration(name, mutation, traitsTable, nil)
-            end)
+            local ok3, genValue = pcall(function() return AnimalsShared:GetGeneration(name, mutation, traitsTable, nil) end)
             if not ok3 or type(genValue) ~= "number" then continue end
-
             local qualifies = shouldScan(name, genValue)
             if qualifies then plotHasQualifying = true end
-
             local displayName = name
             local info = AnimalsData[name]
             if info and info.DisplayName then displayName = info.DisplayName end
-
             table.insert(plotItems, {
-                name       = displayName,
-                index      = name,
-                genValue   = genValue,
-                mutation   = mutation,
-                traitsList = traitsList,
-                traitCount = traitsTable and #traitsTable or 0,
-                inDuel     = inDuel,
-                qualifies  = qualifies,
-                ownerName  = ownerName,
+                name=displayName, index=name, genValue=genValue, mutation=mutation,
+                traitsList=traitsList, traitCount=traitsTable and #traitsTable or 0,
+                inDuel=inDuel, qualifies=qualifies, ownerName=ownerName,
             })
         end
-
         if not plotHasQualifying then continue end
-
         for _, item in ipairs(plotItems) do
             local genText = "$" .. formatValue(item.genValue) .. "/s"
             local key     = item.name .. genText .. "|" .. item.ownerName
             if seen[key] then continue end
             seen[key] = true
             if hasBeenLogged(currentJobId, item.name, genText) then continue end
-
-            local isUltraName = false
-            for _, u in ipairs(ULTRA_BRAINROTS) do
-                if u ~= "" and item.name:lower() == u:lower() then isUltraName = true break end
-            end
-
+            local isUltraName = isUltra(item.name)
             local tier = (item.genValue >= 1e9 or isUltraName) and "ULTRA"
                       or (item.genValue >= 100e6)               and "HIGH"
                       or "MID"
-
             table.insert(results, {
-                tier      = tier,
-                name      = item.name,
-                gen       = genText,
-                value     = item.genValue,
-                mutation  = item.mutation,
-                traits    = #item.traitsList > 0 and item.traitsList or nil,
-                inDuel    = item.inDuel,
-                ownerName = item.ownerName,
-                qualifies = item.qualifies,
+                tier=tier, name=item.name, gen=genText, value=item.genValue,
+                mutation=item.mutation, traits=#item.traitsList > 0 and item.traitsList or nil,
+                inDuel=item.inDuel, ownerName=item.ownerName, qualifies=item.qualifies,
             })
-
-            print(string.format(
-                "FOUND: %s | Mutation: %s | Traits: %d | Gen: %s | Tier: %s%s",
-                item.name, item.mutation or "None", item.traitCount,
-                genText, tier, item.inDuel and " [IN DUEL]" or ""
-            ))
+            print(string.format("FOUND: %s | Mutation: %s | Traits: %d | Gen: %s | Tier: %s%s",
+                item.name, item.mutation or "None", item.traitCount, genText, tier, item.inDuel and " [IN DUEL]" or ""))
         end
-    end
-
-    return results
-end
-
-local function scanConveyor(seen, currentJobId)
-    local results = {}
-    for _, obj in ipairs(Workspace:GetChildren()) do
-        if not obj:IsA("Model") then continue end
-        local name = obj.Name
-        if not AnimalsData or not AnimalsData[name] then continue end
-        local info = AnimalsData[name]
-        local displayName = (info and info.DisplayName) or name
-        local mutation = obj:GetAttribute("Mutation") or nil
-        if type(mutation) ~= "string" or mutation == "" then mutation = nil end
-        local ok, genValue = pcall(function()
-            return AnimalsShared:GetGeneration(name, mutation, nil, nil)
-        end)
-        if not ok or type(genValue) ~= "number" then continue end
-        if not shouldScan(name, genValue) then continue end
-        local genText = "$" .. formatValue(genValue) .. "/s"
-        local key = "conveyor|" .. displayName .. genText
-        if seen[key] then continue end
-        seen[key] = true
-        if hasBeenLogged(currentJobId, displayName, genText) then continue end
-        local isUltraName = false
-        for _, u in ipairs(ULTRA_BRAINROTS) do
-            if u ~= "" and displayName:lower() == u:lower() then isUltraName = true break end
-        end
-        local tier = (genValue >= 1e9 or isUltraName) and "ULTRA"
-                  or isHighBrainrot(displayName)       and "HIGH"
-                  or isGodBrainrot(displayName)        and "FOUND"
-                  or isLuckyBlock(displayName)         and "LUCKY"
-                  or isEventBrainrot(displayName)      and "EVENT"
-                  or (genValue >= 100e6)               and "MID"
-                  or (genValue >= 30e6)                and "BAD"
-                  or nil
-        if not tier then continue end
-        table.insert(results, {
-            tier         = tier,
-            name         = displayName,
-            gen          = genText,
-            value        = genValue,
-            mutation     = mutation,
-            traits       = nil,
-            inDuel       = false,
-            ownerName    = "Esteira",
-            fromConveyor = true,
-        })
-        print(string.format("🎯 ESTEIRA: %s | Gen: %s | Tier: %s", displayName, genText, tier))
     end
     return results
 end
 
+-- ══════════════════════════════════════════════════════
+--   FIREBASE (mantido original)
+-- ══════════════════════════════════════════════════════
 local function sendToFirebase(itemName, itemValue, ownerName)
-    if FIREBASE_URL == "" then warn("❌ FIREBASE_URL vazia") return end
+    if FIREBASE_URL == "" then return end
     local headers = { ["Content-Type"] = "application/json" }
-    local data = {
-        Item      = tostring(itemName or "Unknown"),
-        Value     = tonumber(itemValue) or 0,
-        ValueRaw  = formatValue(tonumber(itemValue) or 0),
-        PlaceId   = PLACE_ID,
-        JobId     = CURRENT_JOB,
-        Timestamp = os.time(),
-        Date      = os.date("%d/%m/%Y %H:%M:%S"),
-        Players   = #Players:GetPlayers(),
-        Owner     = ownerName or "Unknown",
-    }
-    local body = HttpService:JSONEncode(data)
-    print("📤 Enviando pro Firebase...")
-    local success, response = pcall(function()
-        return http_request({ Url = FIREBASE_URL, Method = "PUT", Headers = headers, Body = body })
-    end)
-    if success and response then
-        print("✅ Status:", response.StatusCode)
-        print("📥 Resposta:", response.Body)
-    else
-        warn("❌ Falhou ao enviar! Tentando novamente...")
-        task.wait(1)
-        pcall(function()
-            http_request({ Url = FIREBASE_URL, Method = "PUT", Headers = headers, Body = body })
-        end)
-    end
+    local data = { Item=tostring(itemName or "Unknown"), Value=tonumber(itemValue) or 0, ValueRaw=formatValue(tonumber(itemValue) or 0), PlaceId=PLACE_ID, JobId=CURRENT_JOB, Timestamp=os.time(), Date=os.date("%d/%m/%Y %H:%M:%S"), Players=#Players:GetPlayers(), Owner=ownerName or "Unknown" }
+    pcall(function() http_request({ Url=FIREBASE_URL, Method="PUT", Headers=headers, Body=HttpService:JSONEncode(data) }) end)
 end
 
--- Emojis de mutação (vêm em lowercase do jogo)
+-- ══════════════════════════════════════════════════════
+--   EMOJIS / WEBHOOK DISCORD
+-- ══════════════════════════════════════════════════════
 local MUTATION_EMOJIS = {
-    ["gold"]        = "<:MutGold:1500616798146400256>",
-    ["lava"]        = "<:MutLava:1500617885339488286>",
-    ["galaxy"]      = "<:MutGalaxy:1500617886606164191>",
-    ["yiyang"]      = "<:MutYinYang:1500618460961443923>",
-    ["yi yang"]     = "<:MutYinYang:1500618460961443923>",
-    ["divine"]      = "<:MutDivine:1500618464312692756>",
-    ["candy"]       = "<:MutCandy:1500617169598156995>",
-    ["cursed"]      = "<:MutCursed:1500626484836962325>",
-    ["radioactive"] = "<:MutRadioactive:1500618462496690330>",
-    ["radioativa"]  = "<:MutRadioactive:1500618462496690330>",
-    ["blood"]       = "<:MutBloodrot:1500617171229868184>",
-    ["bloody"]      = "<:MutBloodrot:1500617171229868184>",
-    ["rainbow"]     = "<:MutRainbow:1500617168000258190>",
-    ["diamond"]     = "<:MutDiamond:1500617166637240360>",
-    ["diamante"]    = "<:MutDiamond:1500617166637240360>",
-    ["default"]     = "<:MutDefault:1500616721373855780>",
-    ["normal"]      = "<:MutDefault:1500616721373855780>",
-    ["base"]        = "<:MutDefault:1500616721373855780>",
+    ["gold"]="<:MutGold:1500616798146400256>",["lava"]="<:MutLava:1500617885339488286>",
+    ["galaxy"]="<:MutGalaxy:1500617886606164191>",["yiyang"]="<:MutYinYang:1500618460961443923>",
+    ["yi yang"]="<:MutYinYang:1500618460961443923>",["divine"]="<:MutDivine:1500618464312692756>",
+    ["candy"]="<:MutCandy:1500617169598156995>",["cursed"]="<:MutCursed:1500626484836962325>",
+    ["radioactive"]="<:MutRadioactive:1500618462496690330>",["radioativa"]="<:MutRadioactive:1500618462496690330>",
+    ["blood"]="<:MutBloodrot:1500617171229868184>",["bloody"]="<:MutBloodrot:1500617171229868184>",
+    ["rainbow"]="<:MutRainbow:1500617168000258190>",["diamond"]="<:MutDiamond:1500617166637240360>",
+    ["diamante"]="<:MutDiamond:1500617166637240360>",["default"]="<:MutDefault:1500616721373855780>",
+    ["normal"]="<:MutDefault:1500616721373855780>",["base"]="<:MutDefault:1500616721373855780>",
 }
-
--- Emojis de traits (vêm com letra maiúscula exata do jogo)
 local TRAIT_EMOJIS = {
-    ["Skibidi"]         = "<:Skibidi:1502168586754457671>",
-    ["Indonesia"]       = "<:Indonesia:1502168556664520724>",
-    ["Chocolate"]       = "<:Chocolate:1502168524247007405>",
-    ["PinkEgg"]         = "<:PinkEgg:1512256157148774410>",
-    ["ReindeerPet"]     = "<:ReindeerPet:1506711039725670653>",
-    ["WitchHat"]        = "<:WitchHat:1506711037930504323>",
-    ["BunnyEars"]       = "<:BunnyEars:1502168535554592808>",
-    ["Brazil"]          = "<:Brazil:1502168530898915388>",
-    ["Disco"]           = "<:Disco:1502168537337299065>",
-    ["Cometstruck"]     = "<:Cometstruck:1502168527547662396>",
-    ["Galactic"]        = "<:Galactic:1502168542022336616>",
-    ["Granny"]          = "<:Granny:1502168548200681522>",
-    ["JohnPork"]        = "<:JohnPork:1503850064945352794>",
-    ["JackOLanternPet"] = "<:JackOLanternPet:1505806518107508746>",
-    ["Fireworks"]       = "<:Fireworks:1502168540365455421>",
-    ["Lucky"]           = "<:Lucky:1502168559676035142>",
-    ["Glitched"]        = "<:Glitched:1502168546430554142>",
-    ["Explosive"]       = "<:Explosive:1502063682748682260>",
-    ["Fire"]            = "<:Fire:1502168538645921796>",
-    ["GreenBalloon"]    = "<:GreenBalloon:1502168550243041301>",
-    ["Meowl"]           = "<:Meowl:1502168563383926844>",
-    ["Rose"]            = "<:Rose:1502168581377495181>",
-    ["SantaHat"]        = "<:SantaHat:1502168582379933839>",
-    ["SharkFin"]        = "<:SharkFin:1502168584057651362>",
-    ["Sombrero"]        = "<:Sombrero:1502168589510246532>",
-    ["Snowy"]           = "<:Snowy:1502168588159811655>",
-    ["Strawberry"]      = "<:Strawberry:1502168592307978301>",
-    ["TenB"]            = "<:TenB:1502168595218567188>",
-    ["TwentySix"]       = "<:TwentySix:1502168598133735515>",
-    ["UFO"]             = "<:UFO:1502168600306257931>",
-    ["Wet"]             = "<:Wet:1502168601359159428>",
-    ["RainbowBalloon"]  = "<:RainbowBalloon:1502168578252865608>",
-    ["OrangeBalloon"]   = "<:OrangeBalloon:1502168568639389747>",
-    ["RedBalloon"]      = "<:RedBalloon:1502168579917873213>",
-    ["Paint"]           = "<:Paint:1502168573588803584>",
-    ["PinkBalloon"]     = "<:PinkBalloon:1502168574704357528>",
-    ["Taco"]            = "<:Taco:1502168593733910659>",
-    ["RIPGravestone"]   = "<:RIPGravestone:1502168576398721187>",
-    ["Spider"]          = "<:Spider:1502168590894501938>",
-    ["CrabRave"]        = "<:crab_rave:1502168608120377424>",
-    ["Zombie"]          = "<:Zombie:1502168606073421865>",
-    ["1Year"]           = "<:1Year:1505613290603282605>",
+    ["Skibidi"]="<:Skibidi:1502168586754457671>",["Indonesia"]="<:Indonesia:1502168556664520724>",
+    ["Chocolate"]="<:Chocolate:1502168524247007405>",["PinkEgg"]="<:PinkEgg:1512256157148774410>",
+    ["ReindeerPet"]="<:ReindeerPet:1506711039725670653>",["WitchHat"]="<:WitchHat:1506711037930504323>",
+    ["BunnyEars"]="<:BunnyEars:1502168535554592808>",["Brazil"]="<:Brazil:1502168530898915388>",
+    ["Disco"]="<:Disco:1502168537337299065>",["Cometstruck"]="<:Cometstruck:1502168527547662396>",
+    ["Galactic"]="<:Galactic:1502168542022336616>",["Granny"]="<:Granny:1502168548200681522>",
+    ["JohnPork"]="<:JohnPork:1503850064945352794>",["JackOLanternPet"]="<:JackOLanternPet:1505806518107508746>",
+    ["Fireworks"]="<:Fireworks:1502168540365455421>",["Lucky"]="<:Lucky:1502168559676035142>",
+    ["Glitched"]="<:Glitched:1502168546430554142>",["Explosive"]="<:Explosive:1502063682748682260>",
+    ["Fire"]="<:Fire:1502168538645921796>",["GreenBalloon"]="<:GreenBalloon:1502168550243041301>",
+    ["Meowl"]="<:Meowl:1502168563383926844>",["Rose"]="<:Rose:1502168581377495181>",
+    ["SantaHat"]="<:SantaHat:1502168582379933839>",["SharkFin"]="<:SharkFin:1502168584057651362>",
+    ["Sombrero"]="<:Sombrero:1502168589510246532>",["Snowy"]="<:Snowy:1502168588159811655>",
+    ["Strawberry"]="<:Strawberry:1502168592307978301>",["TenB"]="<:TenB:1502168595218567188>",
+    ["TwentySix"]="<:TwentySix:1502168598133735515>",["UFO"]="<:UFO:1502168600306257931>",
+    ["Wet"]="<:Wet:1502168601359159428>",["RainbowBalloon"]="<:RainbowBalloon:1502168578252865608>",
+    ["OrangeBalloon"]="<:OrangeBalloon:1502168568639389747>",["RedBalloon"]="<:RedBalloon:1502168579917873213>",
+    ["Paint"]="<:Paint:1502168573588803584>",["PinkBalloon"]="<:PinkBalloon:1502168574704357528>",
+    ["Taco"]="<:Taco:1502168593733910659>",["RIPGravestone"]="<:RIPGravestone:1502168576398721187>",
+    ["Spider"]="<:Spider:1502168590894501938>",["CrabRave"]="<:crab_rave:1502168608120377424>",
+    ["Zombie"]="<:Zombie:1502168606073421865>",["1Year"]="<:1Year:1505613290603282605>",
 }
-
 local CHANNEL_NAMES = {
-    ["Ultra"]               = "Ultralights",
-    ["High"]                = "Highlights",
-    ["Mid"]                 = "Midlights",
-    ["Bad"]                 = "Badlights",
-    ["Found"]               = "Found",
-    ["Lucky"]               = "Lucky Block",
-    ["Event"]               = "Events",
-    ["Cash Or Card notify"] = "Notifier Access",
+    ["Ultra"]="Ultralights",["High"]="Highlights",["Mid"]="Midlights",["Bad"]="Badlights",
+    ["Found"]="Found",["Lucky"]="Lucky Block",["Event"]="Events",["Cash Or Card notify"]="Notifier Access",
 }
-
--- Retorna emoji da mutação (lowercase)
 local function getMutationEmoji(mutation)
-    if not mutation or mutation == "" or mutation == "none" or mutation == "default" then
-        return "<:MutDefault:1500616721373855780>"
-    end
+    if not mutation or mutation == "" or mutation == "none" or mutation == "default" then return "<:MutDefault:1500616721373855780>" end
     return MUTATION_EMOJIS[mutation:lower()] or "<:MutDefault:1500616721373855780>"
 end
-
--- Retorna emojis dos traits (case-sensitive exato)
 local function getTraitEmojis(traits)
     if type(traits) ~= "table" or #traits == 0 then return "" end
-    local emojis = {}
-    local seen = {}
-    for _, t in ipairs(traits) do
-        local emoji = TRAIT_EMOJIS[t]
-        if emoji and not seen[emoji] then
-            seen[emoji] = true
-            table.insert(emojis, emoji)
-        end
-    end
+    local emojis = {}; local seen = {}
+    for _, t in ipairs(traits) do local emoji = TRAIT_EMOJIS[t]; if emoji and not seen[emoji] then seen[emoji]=true; table.insert(emojis, emoji) end end
     return table.concat(emojis, " ")
 end
-
 local function getRarityEmoji(value)
     if value >= 1e9   then return "🔶" end
     if value >= 500e6 then return "🟧" end
@@ -636,153 +433,69 @@ local function getRarityEmoji(value)
     if value >= 10e6  then return "🔹" end
     return ""
 end
-
 local function buildListText(results, targetOwner, skipName)
-    local lines = {}
-    local count = 0
+    local lines = {}; local count = 0
     for _, r in ipairs(results) do
         if r.name == skipName then continue end
         if count >= 20 then break end
-        local rarityEmoji = getRarityEmoji(r.value)
-        local mutEmoji    = getMutationEmoji(r.mutation)
-        local traitStr    = getTraitEmojis(r.traits)
-
-        local line = mutEmoji
+        local line = getMutationEmoji(r.mutation)
+        local traitStr = getTraitEmojis(r.traits)
         if traitStr ~= "" then line = line .. " " .. traitStr end
         line = line .. " · " .. r.name
-        if rarityEmoji ~= "" then line = line .. " " .. rarityEmoji end
+        local re = getRarityEmoji(r.value)
+        if re ~= "" then line = line .. " " .. re end
         line = line .. " — $" .. formatValue(r.value) .. "/s"
         if r.inDuel then line = line .. " ⚔️" end
-
-        table.insert(lines, line)
-        count = count + 1
+        table.insert(lines, line); count = count + 1
     end
     if #lines == 0 then return "" end
     return table.concat(lines, "\n")
 end
-
 local function getBrainrotImage(name)
     local ok, result = pcall(function()
-        local url = "https://stealabrainrot.fandom.com/api.php?action=query&titles="
-                    .. HttpService:UrlEncode(name)
-                    .. "&prop=pageimages&piprop=original&format=json"
-        local resp = http_request({ Url = url, Method = "GET" })
+        local url = "https://stealabrainrot.fandom.com/api.php?action=query&titles=" .. HttpService:UrlEncode(name) .. "&prop=pageimages&piprop=original&format=json"
+        local resp = http_request({ Url=url, Method="GET" })
         if resp and resp.StatusCode == 200 then
             local data = HttpService:JSONDecode(resp.Body)
-            for _, page in pairs(data.query.pages) do
-                if page.original and page.original.source then return page.original.source end
-            end
+            for _, page in pairs(data.query.pages) do if page.original and page.original.source then return page.original.source end end
         end
     end)
     return ok and result or nil
 end
-
 local function sendWebhook(url, name, value, mutation, listText, showFields, footer, ownerName, jobId, includeJoinLink, inDuel, pingHere, traits)
     if not url or url == "" then return end
-
     local imageUrl     = getBrainrotImage(name)
     local joinLink     = "https://liphyrdev.github.io/notifier/?placeId=109983668079237&gameInstanceId=" .. (jobId or CURRENT_JOB)
     local channelLabel = CHANNEL_NAMES[footer] or footer or "Notifier"
-
-    local rarityEmoji = getRarityEmoji(value)
-    local mutEmoji    = getMutationEmoji(mutation)
-    local traitStr    = getTraitEmojis(traits)
-
-    -- Linha do nome: MutEmoji · Nome RarityEmoji ⚔️
-    local nameDisplay = mutEmoji .. " · **" .. name .. "**"
+    local rarityEmoji  = getRarityEmoji(value)
+    local mutEmoji     = getMutationEmoji(mutation)
+    local traitStr     = getTraitEmojis(traits)
+    local nameDisplay  = mutEmoji .. " · **" .. name .. "**"
     if rarityEmoji ~= "" then nameDisplay = nameDisplay .. " " .. rarityEmoji end
     if inDuel then nameDisplay = nameDisplay .. " ⚔️" end
-
-    -- Traits em linha separada
-    local traitLine = (traitStr ~= "" and "\n" .. traitStr or "")
-
-    -- Valor
+    local traitLine    = (traitStr ~= "" and "\n" .. traitStr or "")
     local valueDisplay = "\n$" .. formatValue(value) .. "/s"
-
-    -- Others (só mostra se tiver conteúdo)
-    local othersText = ""
-    if listText and listText ~= "" then
-        othersText = "\n\n**Others**\n" .. listText
-    end
-
-    local description = nameDisplay .. traitLine .. valueDisplay .. othersText
-
-    -- Data/hora Brasília
+    local othersText   = ""
+    if listText and listText ~= "" then othersText = "\n\n**Others**\n" .. listText end
+    local description  = nameDisplay .. traitLine .. valueDisplay .. othersText
     local brasilia_time = os.date("!%d de %B de %Y às %H:%M", os.time() - 3 * 3600)
-
     local fields = {}
     if includeJoinLink then
-        table.insert(fields, {
-            ["name"]  = "Job ID",
-            ["value"] = "`" .. (jobId or CURRENT_JOB) .. "`",
-        })
-        table.insert(fields, {
-            ["name"]  = "​",
-            ["value"] = "[🔗 Click Here To Join!](" .. joinLink .. ")",
-        })
+        table.insert(fields, { ["name"]="Job ID", ["value"]="`"..(jobId or CURRENT_JOB).."`" })
+        table.insert(fields, { ["name"]="​", ["value"]="[🔗 Click Here To Join!]("..joinLink..")" })
     end
-
-    local embed = {
-        ["title"]       = "Cash Or Card Notifier · " .. channelLabel,
-        ["color"]       = EMBED_COLOR,
-        ["description"] = description,
-        ["fields"]      = fields,
-        ["footer"]      = { ["text"] = "Cash Or Card Notifier || " .. brasilia_time .. " | Made by Lanzin" },
-    }
-
-    if imageUrl and imageUrl ~= "" then
-        embed["thumbnail"] = { ["url"] = imageUrl }
-    end
-
+    local embed = { ["title"]="Cash Or Card Notifier · "..channelLabel, ["color"]=EMBED_COLOR, ["description"]=description, ["fields"]=fields, ["footer"]={ ["text"]="Cash Or Card Notifier || "..brasilia_time.." | Made by Lanzin" } }
+    if imageUrl and imageUrl ~= "" then embed["thumbnail"] = { ["url"]=imageUrl } end
     pcall(function()
-        local body = { username = "Cash Or Card Notifier", embeds = { embed } }
+        local body = { username="Cash Or Card Notifier", embeds={ embed } }
         if pingHere then body["content"] = "@here" end
-        http_request({
-            Url     = url,
-            Method  = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
-            Body    = HttpService:JSONEncode(body),
-        })
+        http_request({ Url=url, Method="POST", Headers={ ["Content-Type"]="application/json" }, Body=HttpService:JSONEncode(body) })
     end)
 end
 
-local function scanLuckyBlocks(seen, currentJobId)
-    local results = {}
-    if not Synchronizer then return results end
-    local ok, plotsData = pcall(function() return Synchronizer:Get("Plots") end)
-    if not ok or not plotsData then return results end
-    for _, plotData in pairs(plotsData) do
-        if type(plotData) ~= "table" then continue end
-        local list = plotData.Animals or plotData.Brainrots or plotData.Items or {}
-        if type(list) ~= "table" then continue end
-        for _, animalData in pairs(list) do
-            if type(animalData) ~= "table" then continue end
-            local name = animalData.Index
-            if not name then continue end
-            local isLucky = false
-            for _, lb in ipairs(LUCKY_BLOCKS) do
-                if lb ~= "" and name:lower() == lb:lower() then isLucky = true break end
-            end
-            if not isLucky then continue end
-            local key = "lucky|" .. name:lower()
-            if seen[key] then continue end
-            seen[key] = true
-            if hasBeenLogged(currentJobId, name, "lucky") then continue end
-            table.insert(results, {
-                name      = name,
-                value     = 0,
-                mutation  = nil,
-                gen       = "Lucky Block",
-                inDuel    = false,
-                ownerName = "?",
-                fromLucky = true,
-            })
-            print(string.format("🍀 LUCKY BLOCK: %s", name))
-        end
-    end
-    return results
-end
-
+-- ══════════════════════════════════════════════════════
+--   MAIN
+-- ══════════════════════════════════════════════════════
 task.wait(0.3)
 
 local detectedJobId = game.JobId
@@ -798,28 +511,32 @@ if Synchronizer then
         table.sort(results, function(a, b) return a.value > b.value end)
 
         local best = nil
-        for _, r in ipairs(results) do
-            if r.qualifies then best = r break end
-        end
+        for _, r in ipairs(results) do if r.qualifies then best = r break end end
         if not best then best = results[1] end
 
         if best then
-            if _G.CashOrCardNotify then
-                pcall(function()
-                    _G.CashOrCardNotify({ name = best.name, value = formatValue(best.value), jobId = detectedJobId })
-                end)
-            end
+            if _G.CashOrCardNotify then pcall(function() _G.CashOrCardNotify({ name=best.name, value=formatValue(best.value), jobId=detectedJobId }) end) end
 
+            -- Firebase
             sendToFirebase(best.name, best.value, best.ownerName)
+
+            -- ✅ RAILWAY — envia pra API
+            sendToRailway(
+                best.name,
+                best.value,
+                best.mutation,
+                best.traits,
+                best.tier or "MID",
+                best.ownerName,
+                detectedJobId,
+                best.inDuel
+            )
 
             local listText = buildListText(results, best.ownerName, best.name)
             sendWebhook(WEBHOOK_URL, best.name, best.value, best.mutation, listText, true, "Cash Or Card notify",
                 best.ownerName, detectedJobId, true, best.inDuel, nil, best.traits)
 
-            local isUltraB = false
-            for _, u in ipairs(ULTRA_BRAINROTS) do
-                if u ~= "" and best.name:lower() == u:lower() then isUltraB = true break end
-            end
+            local isUltraB = isUltra(best.name)
             local isHighB  = isHighBrainrot(best.name)
             local isGodB   = isGodBrainrot(best.name)
             local isLuckyB = isLuckyBlock(best.name)
@@ -827,54 +544,31 @@ if Synchronizer then
 
             local hasNonEvent = false
             for _, r in ipairs(results) do
-                local isUltraR = false
-                for _, u in ipairs(ULTRA_BRAINROTS) do
-                    if u ~= "" and r.name:lower() == u:lower() then isUltraR = true break end
-                end
-                if isUltraR or r.value >= 1e9
-                or isHighBrainrot(r.name)
-                or isGodBrainrot(r.name)
-                or isLuckyBlock(r.name)
-                or (r.value >= 30e6 and not isEventBrainrot(r.name)) then
-                    hasNonEvent = true
-                    break
+                if isUltra(r.name) or r.value >= 1e9 or isHighBrainrot(r.name) or isGodBrainrot(r.name) or isLuckyBlock(r.name) or (r.value >= 30e6 and not isEventBrainrot(r.name)) then
+                    hasNonEvent = true break
                 end
             end
 
             if isUltraB or best.value >= 1e9 then
-                sendWebhook(WEBHOOK_ULTRA, best.name, best.value, best.mutation, listText, true, "Ultra",
-                    best.ownerName, detectedJobId, false, best.inDuel, true, best.traits)
-
+                sendWebhook(WEBHOOK_ULTRA, best.name, best.value, best.mutation, listText, true, "Ultra", best.ownerName, detectedJobId, false, best.inDuel, true, best.traits)
             elseif isHighB then
-                sendWebhook(WEBHOOK_HIGH, best.name, best.value, best.mutation, listText, true, "High",
-                    best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
-
+                sendWebhook(WEBHOOK_HIGH, best.name, best.value, best.mutation, listText, true, "High", best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
             elseif isGodB then
-                sendWebhook(WEBHOOK_FOUND, best.name, best.value, best.mutation, listText, true, "Found",
-                    best.ownerName, detectedJobId, true, best.inDuel, false, best.traits)
-
+                sendWebhook(WEBHOOK_FOUND, best.name, best.value, best.mutation, listText, true, "Found", best.ownerName, detectedJobId, true, best.inDuel, false, best.traits)
             elseif isLuckyB then
-                sendWebhook(WEBHOOK_LUCKY, best.name, best.value, best.mutation, listText, true, "Lucky",
-                    best.ownerName, detectedJobId, true, best.inDuel, false, best.traits)
-
+                sendWebhook(WEBHOOK_LUCKY, best.name, best.value, best.mutation, listText, true, "Lucky", best.ownerName, detectedJobId, true, best.inDuel, false, best.traits)
             elseif isEventB then
                 if not hasNonEvent then
-                    sendWebhook(WEBHOOK_EVENT, best.name, best.value, best.mutation, listText, true, "Event",
-                        best.ownerName, detectedJobId, true, best.inDuel, false, best.traits)
+                    sendWebhook(WEBHOOK_EVENT, best.name, best.value, best.mutation, listText, true, "Event", best.ownerName, detectedJobId, true, best.inDuel, false, best.traits)
                 end
-
             elseif best.value >= 100e6 and best.value < 10e9 then
-                sendWebhook(WEBHOOK_MID, best.name, best.value, best.mutation, listText, true, "Mid",
-                    best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
-
+                sendWebhook(WEBHOOK_MID, best.name, best.value, best.mutation, listText, true, "Mid", best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
             elseif best.value >= 30e6 and best.value < 100e6 then
-                sendWebhook(WEBHOOK_BAD, best.name, best.value, best.mutation, listText, true, "Bad",
-                    best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
+                sendWebhook(WEBHOOK_BAD, best.name, best.value, best.mutation, listText, true, "Bad", best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
             end
 
             print("✅ Sucesso:", best.name, "| Owner:", best.ownerName, "|", best.gen)
             if best.inDuel then print("⚔️ Em duel!") end
-
             task.wait(0.5)
             hop(best.name)
         end
