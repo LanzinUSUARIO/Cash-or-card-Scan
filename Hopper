@@ -25,124 +25,51 @@ local FIREBASE_URL  = ""
 
 local TARGET_NAMES    = {""}
 local ULTRA_BRAINROTS = {
-    "Dragão Canelloni",
-    "Skibidi Toilet",
-    "Meowl",
-    "Arcadragon Antônio",
-    "Elefante Frigo",
-    "Gym Bros",
-    "Tiririkalikalo",
-    "Hydra Dragon Canelloni",
-    "Cokie And Milki",
-    "Fortunu And Cashuru",
-    "Spooky And Pumpky",
-    "Hydra Bunny",
-    "Griffin",
-    "Cash Or Card",
-    "Strawberry Elephant",
-    "La Supreme Combinação",
-    "Reinito Sleito",
-    "Ketupat Bros",
-    "Kalika Bros",
-    "Duggy Duggy Bros",
-    "Foxini Lanternini",
-    "La Casa Boo",
-    "La Food Combinasion",
-    -- OGs
-    "Headless Horseman",
-    -- Secret
-    "Dragon Gingerini",
-    "Signore Carapace",
+    "Dragão Canelloni", "Skibidi Toilet", "Meowl", "Arcadragon Antônio",
+    "Elefante Frigo", "Gym Bros", "Tiririkalikalo", "Hydra Dragon Canelloni",
+    "Cokie And Milki", "Fortunu And Cashuru", "Spooky And Pumpky", "Hydra Bunny",
+    "Griffin", "Cash Or Card", "Strawberry Elephant", "La Supreme Combinação",
+    "Reinito Sleito", "Ketupat Bros", "Kalika Bros", "Duggy Duggy Bros",
+    "Foxini Lanternini", "La Casa Boo", "La Food Combinasion",
+    "Headless Horseman", "Dragon Gingerini", "Signore Carapace",
 }
 
--- Brainrots que apitam no HIGH a partir de 50M
-local HIGH_BRAINROTS  = {
-    "Garama",
-    "Burguro",
-    "Capitano",
-    "Cash Or Card",
-    "Guest 666",
-    "John Doe",
-    "Los Hotspotsitos",
-    "Celularcini Viciosini",
-    "Gym Bros",
-    "Jolly Jolly Sahur",
-    "Money Money Bros",
-    "Hopilikalikako",
-    "Festive 67",
-    "Duggy Duggy Bros",
-    "Los Primos",
-    "Los Mariachis",
-    "Lovin Rose",
-    "Ginger Gerat",
-    "Los Chillin",
-    "Los Hackers",
-    "Spooky And Pumpky",
-    "Boppin Bunny",
-    "Kalika Bros",
-    "Fortunu And Cashuru",
-    "Popuru And Fizzuru",
-    "Digi Narwhal",
-    "La Secret Combinasion",
-    "Los Sekolahs",
+local HIGH_BRAINROTS = {
+    "Garama", "Burguro", "Capitano", "Cash Or Card", "Guest 666", "John Doe",
+    "Los Hotspotsitos", "Celularcini Viciosini", "Gym Bros", "Jolly Jolly Sahur",
+    "Money Money Bros", "Hopilikalikako", "Festive 67", "Duggy Duggy Bros",
+    "Los Primos", "Los Mariachis", "Lovin Rose", "Ginger Gerat", "Los Chillin",
+    "Los Hackers", "Spooky And Pumpky", "Boppin Bunny", "Kalika Bros",
+    "Fortunu And Cashuru", "Popuru And Fizzuru", "Digi Narwhal",
+    "La Secret Combinasion", "Los Sekolahs",
 }
 
--- Brainrots de evento (ritual/admin) que apitam no canal Event
 local EVENT_BRAINROTS = {
-    "Dul Dul Dul",
-    "Guerriro Digitale",
-    "Orcalero Orcala",
-    "La Vacca Saturno Saturnita",
-    "1x1x1x1",
-    "Sammyni Spyderini",
-    "Matteooooooooooooooo",
-    "Chicleteira Bicicleteira",
-    "Bombardiro Crocodilo",
+    "Dul Dul Dul", "Guerriro Digitale", "Orcalero Orcala",
+    "La Vacca Saturno Saturnita", "1x1x1x1", "Sammyni Spyderini",
+    "Matteooooooooooooooo", "Chicleteira Bicicleteira", "Bombardiro Crocodilo",
 }
 
-local BLACK_NAMES     = {"Fishboard", ""}
+local BLACK_NAMES = {"Fishboard", ""}
 
--- Brainrots que apitam no canal Found (raridades Brainrot God)
 local GOD_BRAINROTS = {
-    "Tob Tobi Tobi",
-    "Ganganzelli Trulala",
-    "Brutto Gialutto",
-    "Centrucci Nuclucci",
-    "Rhino Helicopterino",
-    "Trenostruzzo Turbo 4000",
-    "Ginger Cisterna",
-    "Las Capuchinas",
-    "Avocadorilla",
-    "Fragola La La La",
-    "Doi Doi Do",
-    "Pineaplino",
-    "Racooni Jandelini",
-    "Raccooni Jandelini",
-    "Fishino Clownino",
-    "Gobblino Uniciclino",
-    "Stoppo Luminino",
-    "Unclito Samito",
+    "Tob Tobi Tobi", "Ganganzelli Trulala", "Brutto Gialutto", "Centrucci Nuclucci",
+    "Rhino Helicopterino", "Trenostruzzo Turbo 4000", "Ginger Cisterna",
+    "Las Capuchinas", "Avocadorilla", "Fragola La La La", "Doi Doi Do",
+    "Pineaplino", "Racooni Jandelini", "Raccooni Jandelini", "Fishino Clownino",
+    "Gobblino Uniciclino", "Stoppo Luminino", "Unclito Samito",
 }
 
--- Lucky Blocks que apitam no canal Lucky (todas menos Mythic e Brainrot God)
 local LUCKY_BLOCKS = {
-    "Lucky Block",
-    "Admin Lucky Block",
-    "Los Lucky Blocks",
-    "Taco Lucky Block",
-    "Los Taco Blocks",
-    "Spooky Lucky Block",
-    "Festive Lucky Block",
-    "Heart Lucky Block",
-    "Leprechaun Lucky Block",
-    "Egg Lucky Block",
-    "Hydra Bunny Lucky Block",
-    "Hopilikalikako Lucky Block",
+    "Lucky Block", "Admin Lucky Block", "Los Lucky Blocks", "Taco Lucky Block",
+    "Los Taco Blocks", "Spooky Lucky Block", "Festive Lucky Block",
+    "Heart Lucky Block", "Leprechaun Lucky Block", "Egg Lucky Block",
+    "Hydra Bunny Lucky Block", "Hopilikalikako Lucky Block",
     "Hopilikalika Hopilikalako Lucky Block",
 }
 
-local MIN_VALUE     = 10000000
-local NOTIFIER_NAME = "gaaara"
+local MIN_VALUE     = 30000000
+local NOTIFIER_NAME = "cashOrCard"
 local CURRENT_JOB   = tostring(game.JobId)
 local PLACE_ID      = game.PlaceId
 local EMBED_COLOR   = 2370601
@@ -153,12 +80,8 @@ print("Players: " .. tostring(#Players:GetPlayers()))
 
 local http_request = http_request or (syn and syn.request) or (http and http.request) or request
 
--- =========================
--- MOTOR DE HOP EXTRAÍDO (QLTZ)
--- =========================
 local function hop(label)
     print("🚀 Iniciando Hop: " .. (label or "Scan"))
-
     local function doHop()
         local servers = {}
         local req = game:HttpGet("https://games.roblox.com/v1/games/" .. PLACE_ID .. "/servers/Public?sortOrder=Asc&limit=100")
@@ -177,7 +100,6 @@ local function hop(label)
             TeleportService:TeleportToPlaceInstance(PLACE_ID, target, LocalPlayer)
         end
     end
-
     task.spawn(function()
         while true do
             pcall(doHop)
@@ -186,12 +108,10 @@ local function hop(label)
     end)
 end
 
--- Re-tentar se o teleporte falhar
 TeleportService.TeleportInitFailed:Connect(function()
     hop("Retry")
 end)
 
--- LOAD MODULES
 local Synchronizer  = nil
 local AnimalsData   = nil
 local AnimalsShared = nil
@@ -211,7 +131,6 @@ do
     if ok_sh  and Shared   then AnimalsShared = tryLoad(Shared,   "Animals")      end
 end
 
--- FUNÇÕES AUXILIARES
 local function parseValue(text)
     if not text then return 0 end
     local clean = tostring(text):gsub("[%$%s%,%/s%/m%/h]", "")
@@ -273,11 +192,9 @@ end
 local function isLuckyBlock(name)
     if not name then return false end
     local low = name:lower()
-    -- Match exato primeiro
     for _, l in ipairs(LUCKY_BLOCKS) do
         if l ~= "" and low == l:lower() then return true end
     end
-    -- Match parcial: qualquer coisa com "lucky block" no nome
     if low:find("lucky block", 1, true) then return true end
     return false
 end
@@ -297,9 +214,8 @@ end
 
 local function resolveOwnerName(owner)
     if not owner then return nil end
-    if typeof(owner) == "Instance" and owner:IsA("Player") then
-        return owner.Name
-    elseif typeof(owner) == "table" then
+    if typeof(owner) == "Instance" and owner:IsA("Player") then return owner.Name end
+    if typeof(owner) == "table" then
         if owner.Name and owner.Name ~= "" then return owner.Name end
         if owner.UserId then
             for _, p in ipairs(Players:GetPlayers()) do
@@ -315,9 +231,7 @@ end
 
 local function isFusing(animalData)
     if animalData.Machine then
-        if animalData.Machine.Type == "Fuse" and animalData.Machine.Active then
-            return true
-        end
+        if animalData.Machine.Type == "Fuse" and animalData.Machine.Active then return true end
     end
     return false
 end
@@ -341,9 +255,7 @@ end
 
 local function cameBackFromDuel(player)
     if player == LocalPlayer then
-        local ok, data = pcall(function()
-            return TeleportService:GetLocalPlayerTeleportData()
-        end)
+        local ok, data = pcall(function() return TeleportService:GetLocalPlayerTeleportData() end)
         if ok and type(data) == "table" then
             if data.fromDuel or data.DuelData or data.duel then return true end
         end
@@ -378,9 +290,7 @@ local function getPlotOwner(plot)
     local ownerAttr = plot:GetAttribute("Owner") or plot:GetAttribute("PlayerName")
     if ownerAttr then
         for _, p in ipairs(Players:GetPlayers()) do
-            if p.Name == tostring(ownerAttr) or tostring(p.UserId) == tostring(ownerAttr) then
-                return p
-            end
+            if p.Name == tostring(ownerAttr) or tostring(p.UserId) == tostring(ownerAttr) then return p end
         end
     end
     for _, p in ipairs(Players:GetPlayers()) do
@@ -393,9 +303,7 @@ local function isPlotOwnerInDuel(plot, duelPlayers)
     local owner = plot:GetAttribute("Owner") or plot:GetAttribute("PlayerName") or plot.Name
     if duelPlayers[owner] or duelPlayers[tostring(owner)] then return true end
     local player = getPlotOwner(plot)
-    if player and (duelPlayers[player.Name] or duelPlayers[tostring(player.UserId)]) then
-        return true
-    end
+    if player and (duelPlayers[player.Name] or duelPlayers[tostring(player.UserId)]) then return true end
     return false
 end
 
@@ -434,8 +342,7 @@ local function scanPlots(duelPlayers, seen, currentJobId)
         end
 
         local ownerName = syncOwner or resolveOwnerName(ownerVal) or "?"
-
-        local plotItems         = {}
+        local plotItems = {}
         local plotHasQualifying = false
 
         for _, animalData in pairs(list) do
@@ -446,8 +353,7 @@ local function scanPlots(duelPlayers, seen, currentJobId)
             if not name then continue end
             if not AnimalsData or not AnimalsData[name] then continue end
 
-            local inDuel = isInDuel(animalData) or plotDuel
-
+            local inDuel   = isInDuel(animalData) or plotDuel
             local data     = animalData.Data or animalData
             local mutation = data.Mutation
             if type(mutation) ~= "string" or mutation == "" then mutation = nil end
@@ -506,15 +412,11 @@ local function scanPlots(duelPlayers, seen, currentJobId)
             local key     = item.name .. genText .. "|" .. item.ownerName
             if seen[key] then continue end
             seen[key] = true
-
             if hasBeenLogged(currentJobId, item.name, genText) then continue end
 
             local isUltraName = false
             for _, u in ipairs(ULTRA_BRAINROTS) do
-                if u ~= "" and item.name:lower() == u:lower() then
-                    isUltraName = true
-                    break
-                end
+                if u ~= "" and item.name:lower() == u:lower() then isUltraName = true break end
             end
 
             local tier = (item.genValue >= 1e9 or isUltraName) and "ULTRA"
@@ -522,25 +424,21 @@ local function scanPlots(duelPlayers, seen, currentJobId)
                       or "MID"
 
             table.insert(results, {
-                tier       = tier,
-                name       = item.name,
-                gen        = genText,
-                value      = item.genValue,
-                mutation   = item.mutation,
-                traits     = #item.traitsList > 0 and item.traitsList or nil,
-                inDuel     = item.inDuel,
-                ownerName  = item.ownerName,
-                qualifies  = item.qualifies,
+                tier      = tier,
+                name      = item.name,
+                gen       = genText,
+                value     = item.genValue,
+                mutation  = item.mutation,
+                traits    = #item.traitsList > 0 and item.traitsList or nil,
+                inDuel    = item.inDuel,
+                ownerName = item.ownerName,
+                qualifies = item.qualifies,
             })
 
             print(string.format(
                 "FOUND: %s | Mutation: %s | Traits: %d | Gen: %s | Tier: %s%s",
-                item.name,
-                item.mutation or "None",
-                item.traitCount,
-                genText,
-                tier,
-                item.inDuel and " [IN DUEL]" or ""
+                item.name, item.mutation or "None", item.traitCount,
+                genText, tier, item.inDuel and " [IN DUEL]" or ""
             ))
         end
     end
@@ -548,52 +446,39 @@ local function scanPlots(duelPlayers, seen, currentJobId)
     return results
 end
 
--- Escaneia brainrots na esteira (passarela) — Models direto no Workspace
 local function scanConveyor(seen, currentJobId)
     local results = {}
-
     for _, obj in ipairs(Workspace:GetChildren()) do
         if not obj:IsA("Model") then continue end
-
         local name = obj.Name
         if not AnimalsData or not AnimalsData[name] then continue end
-
         local info = AnimalsData[name]
         local displayName = (info and info.DisplayName) or name
-
         local mutation = obj:GetAttribute("Mutation") or nil
         if type(mutation) ~= "string" or mutation == "" then mutation = nil end
-
         local ok, genValue = pcall(function()
             return AnimalsShared:GetGeneration(name, mutation, nil, nil)
         end)
         if not ok or type(genValue) ~= "number" then continue end
-
         if not shouldScan(name, genValue) then continue end
-
         local genText = "$" .. formatValue(genValue) .. "/s"
         local key = "conveyor|" .. displayName .. genText
         if seen[key] then continue end
         seen[key] = true
-
         if hasBeenLogged(currentJobId, displayName, genText) then continue end
-
         local isUltraName = false
         for _, u in ipairs(ULTRA_BRAINROTS) do
             if u ~= "" and displayName:lower() == u:lower() then isUltraName = true break end
         end
-
         local tier = (genValue >= 1e9 or isUltraName) and "ULTRA"
                   or isHighBrainrot(displayName)       and "HIGH"
                   or isGodBrainrot(displayName)        and "FOUND"
                   or isLuckyBlock(displayName)         and "LUCKY"
                   or isEventBrainrot(displayName)      and "EVENT"
                   or (genValue >= 100e6)               and "MID"
-                  or (genValue >= 10e6)                and "BAD"
+                  or (genValue >= 30e6)                and "BAD"
                   or nil
-
         if not tier then continue end
-
         table.insert(results, {
             tier         = tier,
             name         = displayName,
@@ -605,15 +490,13 @@ local function scanConveyor(seen, currentJobId)
             ownerName    = "Esteira",
             fromConveyor = true,
         })
-
         print(string.format("🎯 ESTEIRA: %s | Gen: %s | Tier: %s", displayName, genText, tier))
     end
-
     return results
 end
+
 local function sendToFirebase(itemName, itemValue, ownerName)
     if FIREBASE_URL == "" then warn("❌ FIREBASE_URL vazia") return end
-
     local headers = { ["Content-Type"] = "application/json" }
     local data = {
         Item      = tostring(itemName or "Unknown"),
@@ -626,14 +509,11 @@ local function sendToFirebase(itemName, itemValue, ownerName)
         Players   = #Players:GetPlayers(),
         Owner     = ownerName or "Unknown",
     }
-
     local body = HttpService:JSONEncode(data)
     print("📤 Enviando pro Firebase...")
-
     local success, response = pcall(function()
         return http_request({ Url = FIREBASE_URL, Method = "PUT", Headers = headers, Body = body })
     end)
-
     if success and response then
         print("✅ Status:", response.StatusCode)
         print("📥 Resposta:", response.Body)
@@ -646,10 +526,7 @@ local function sendToFirebase(itemName, itemValue, ownerName)
     end
 end
 
--- WEBHOOK
--- Emojis customizados do servidor Discord
 local MUTATION_EMOJIS = {
-    -- Mutações de brainrot específico
     ["ice"]        = "<:gelo:1499796323350614037>",
     ["gelo"]       = "<:gelo:1499796323350614037>",
     ["taco"]       = "<:tacos:1499796380036628512>",
@@ -686,7 +563,6 @@ local MUTATION_EMOJIS = {
     ["easter"]     = "<:pascoa:1499796222486118611>",
     ["gatito"]     = "<:migatito:1499796879242690713>",
     ["mi gatito"]  = "<:migatito:1499796879242690713>",
-    -- Mutações padrão (tipo, raridade)
     ["rainbow"]    = "<:rainbow:1499781349161308372>",
     ["blood"]      = "<:blood:1499781472465191074>",
     ["bloody"]     = "<:blood:1499781472465191074>",
@@ -708,66 +584,25 @@ local MUTATION_EMOJIS = {
 }
 
 local CHANNEL_NAMES = {
-    ["Ultra"]  = "Ultralights",
-    ["High"]   = "Highlights",
-    ["Mid"]    = "Midlights",
-    ["Bad"]    = "Badlights",
-    ["Found"]  = "Found",
-    ["Lucky"]  = "Lucky Block",
-    ["Event"]  = "Events",
-    ["Gaara notify"] = "Notifier Access",
+    ["Ultra"]               = "Ultralights",
+    ["High"]                = "Highlights",
+    ["Mid"]                 = "Midlights",
+    ["Bad"]                 = "Badlights",
+    ["Found"]               = "Found",
+    ["Lucky"]               = "Lucky Block",
+    ["Event"]               = "Events",
+    ["Cash Or Card notify"] = "Notifier Access",
 }
 
-local function getMutationEmojis(mutation)
-    if not mutation or mutation == "" or mutation == "none" or mutation == "default" then return "" end
-    local emojis = {}
-    local low = mutation:lower()
-    local found = false
-    for key, emoji in pairs(MUTATION_EMOJIS) do
-        if low:find(key, 1, true) then
-            table.insert(emojis, emoji)
-            found = true
-        end
-    end
-    if not found then
-        return "**[" .. mutation:upper() .. "]**"
-    end
-    -- Remove duplicatas
-    local seen = {}
-    local unique = {}
-    for _, e in ipairs(emojis) do
-        if not seen[e] then seen[e] = true table.insert(unique, e) end
-    end
-    return table.concat(unique, " ")
-end
-
-local function getBrainrotImage(name)
-    local ok, result = pcall(function()
-        local url = "https://stealabrainrot.fandom.com/api.php?action=query&titles="
-                    .. HttpService:UrlEncode(name)
-                    .. "&prop=pageimages&piprop=original&format=json"
-        local resp = http_request({ Url = url, Method = "GET" })
-        if resp and resp.StatusCode == 200 then
-            local data = HttpService:JSONDecode(resp.Body)
-            for _, page in pairs(data.query.pages) do
-                if page.original and page.original.source then return page.original.source end
-            end
-        end
-    end)
-    return ok and result or nil
-end
-
--- Emoji de raridade por valor
 local function getRarityEmoji(value)
-    if value >= 1e9  then return "🔶" end -- 1B+
-    if value >= 500e6 then return "🟧" end -- 500M+
-    if value >= 100e6 then return "🟦" end -- 100M+
-    if value >= 50e6  then return "🟪" end -- 50M+
-    if value >= 10e6  then return "🔹" end -- 10M+
+    if value >= 1e9   then return "🔶" end
+    if value >= 500e6 then return "🟧" end
+    if value >= 100e6 then return "🟦" end
+    if value >= 50e6  then return "🟪" end
+    if value >= 10e6  then return "🔹" end
     return "⬜"
 end
 
--- Emojis de mutação inline de um brainrot
 local function getInlineMutEmojis(mutation, traits)
     local allMuts = {}
     if mutation and mutation ~= "" and mutation ~= "none" and mutation ~= "default" then
@@ -799,7 +634,6 @@ local function getMutationPrefix(mutation)
     return "[" .. mutation:upper() .. "] "
 end
 
--- Monta lista "Others" igual ao Goblin
 local function buildListText(results, targetOwner, skipName)
     local lines = {}
     local count = 0
@@ -819,54 +653,34 @@ local function buildListText(results, targetOwner, skipName)
     return table.concat(lines, "\n")
 end
 
+local function getBrainrotImage(name)
+    local ok, result = pcall(function()
+        local url = "https://stealabrainrot.fandom.com/api.php?action=query&titles="
+                    .. HttpService:UrlEncode(name)
+                    .. "&prop=pageimages&piprop=original&format=json"
+        local resp = http_request({ Url = url, Method = "GET" })
+        if resp and resp.StatusCode == 200 then
+            local data = HttpService:JSONDecode(resp.Body)
+            for _, page in pairs(data.query.pages) do
+                if page.original and page.original.source then return page.original.source end
+            end
+        end
+    end)
+    return ok and result or nil
+end
+
 local function sendWebhook(url, name, value, mutation, listText, showFields, footer, ownerName, jobId, includeJoinLink, inDuel, pingHere, traits)
     if not url or url == "" then return end
 
-    local imageUrl   = getBrainrotImage(name)
-    local joinLink   = "https://liphyrdev.github.io/notifier/?placeId=109983668079237&gameInstanceId=" .. (jobId or CURRENT_JOB)
-    local mutPrefix  = getMutationPrefix(mutation)
+    local imageUrl     = getBrainrotImage(name)
+    local joinLink     = "https://liphyrdev.github.io/notifier/?placeId=109983668079237&gameInstanceId=" .. (jobId or CURRENT_JOB)
+    local mutPrefix    = getMutationPrefix(mutation)
     local channelLabel = CHANNEL_NAMES[footer] or footer or "Notifier"
 
-    -- Junta mutation + traits para pegar todos os emojis
-    local allMutations = {}
-    if mutation and mutation ~= "" and mutation ~= "none" then
-        table.insert(allMutations, mutation)
-    end
-    if type(traits) == "table" then
-        for _, t in ipairs(traits) do
-            if type(t) == "string" and t ~= "" then
-                table.insert(allMutations, t)
-            end
-        end
-    end
+    -- Emoji de raridade
+    local rarityEmoji = getRarityEmoji(value)
 
-    -- Monta emojis de todas as mutações + traits
-    local emojiSet = {}
-    local emojiSeen = {}
-    for _, mut in ipairs(allMutations) do
-        local low = mut:lower()
-        for key, emoji in pairs(MUTATION_EMOJIS) do
-            if low:find(key, 1, true) and not emojiSeen[emoji] then
-                emojiSeen[emoji] = true
-                table.insert(emojiSet, emoji)
-            end
-        end
-    end
-    local mutEmojis = #emojiSet > 0 and table.concat(emojiSet, " ") or ""
-
-    -- Se não achou emoji mas tem mutação, mostra o nome
-    if mutEmojis == "" and #allMutations > 0 then
-        local names = {}
-        for _, m in ipairs(allMutations) do table.insert(names, "[" .. m:upper() .. "]") end
-        mutEmojis = table.concat(names, " ")
-    end
-
-    -- Data/hora em Brasília completa
-    local brasilia_time = os.date("!%d de %B de %Y às %H:%M", os.time() - 3 * 3600)
-
-    local embedTitle = "Gaara Notifier | " .. channelLabel
-
-    -- Emoji da mutação principal (Cyber, Gold, etc)
+    -- Emoji da mutação principal
     local mainMutEmoji = ""
     if mutation and mutation ~= "" and mutation ~= "none" and mutation ~= "default" then
         local low = mutation:lower()
@@ -879,7 +693,7 @@ local function sendWebhook(url, name, value, mutation, listText, showFields, foo
         if mainMutEmoji == "" then mainMutEmoji = "**[" .. mutation:upper() .. "]**" end
     end
 
-    -- Emojis dos traits (taco, fogo, etc) — linha separada
+    -- Emojis dos traits
     local traitEmojis = {}
     local traitSeen = {}
     if type(traits) == "table" then
@@ -897,46 +711,53 @@ local function sendWebhook(url, name, value, mutation, listText, showFields, foo
     end
     local traitEmojisStr = table.concat(traitEmojis, " ")
 
-    -- Linha do nome: emoji_mutação_principal [MUTAÇÃO] Nome $valor
-    local nameDisplay = (mainMutEmoji ~= "" and mainMutEmoji .. " " or "") .. "**" .. mutPrefix .. name .. "** $" .. formatValue(value) .. "/s"
+    -- Nome estilo Bob: emoji · [MUT] Nome (traits)
+    local nameDisplay = rarityEmoji .. (mainMutEmoji ~= "" and " " .. mainMutEmoji or "") .. " · **" .. mutPrefix .. name .. "**"
+    if traitEmojisStr ~= "" then nameDisplay = nameDisplay .. " " .. traitEmojisStr end
+    if inDuel then nameDisplay = nameDisplay .. " ⚔️" end
 
-    local descParts = {}
-    table.insert(descParts, nameDisplay)
+    -- Valor em linha separada
+    local valueDisplay = "$" .. formatValue(value) .. "/s"
 
-    -- Traits em linha separada embaixo
-    if traitEmojisStr ~= "" then
-        table.insert(descParts, traitEmojisStr)
-    end
-
-    -- "Others" com lista dos outros brainrots
+    -- Others
+    local othersText = ""
     if listText and listText ~= "" then
-        table.insert(descParts, "\n**Others**\n" .. listText)
+        othersText = "\n\n**Others**\n" .. listText
     end
 
-    local description = table.concat(descParts, "\n")
+    local description = nameDisplay .. "\n" .. valueDisplay .. othersText
+
+    -- Data/hora Brasília
+    local brasilia_time = os.date("!%d de %B de %Y às %H:%M", os.time() - 3 * 3600)
 
     local fields = {}
+    table.insert(fields, {
+        ["name"]   = "Owner · Bot",
+        ["value"]  = "`" .. (ownerName or "?") .. "` · `" .. LocalPlayer.Name .. "`",
+        ["inline"] = true,
+    })
     if includeJoinLink then
-        table.insert(fields, {["name"] = "Owner                         Bot", ["value"] = "`" .. (ownerName or "?") .. "`          `" .. LocalPlayer.Name .. "`"})
-        table.insert(fields, {["name"] = "Job ID",      ["value"] = "`" .. (jobId or CURRENT_JOB) .. "`"})
-        table.insert(fields, {["name"] = "Server Info", ["value"] = "`" .. #Players:GetPlayers() .. "/8 Players`"})
-        table.insert(fields, {["name"] = "Join Server", ["value"] = "[CLICK TO JOIN](" .. joinLink .. ")"})
-    else
-        table.insert(fields, {["name"] = "Owner                         Bot", ["value"] = "`" .. (ownerName or "?") .. "`          `" .. LocalPlayer.Name .. "`"})
-        table.insert(fields, {["name"] = "Server Info", ["value"] = "`" .. #Players:GetPlayers() .. "/8 Players`"})
+        table.insert(fields, {
+            ["name"]  = "ID · Job ID",
+            ["value"] = "`" .. (jobId or CURRENT_JOB) .. "`",
+        })
+        table.insert(fields, {
+            ["name"]  = "​",
+            ["value"] = "[🔗 Click Here To Join!](" .. joinLink .. ")",
+        })
     end
 
     local embed = {
-        ["title"]       = embedTitle,
+        ["title"]       = "Cash Or Card Notifier · " .. channelLabel,
         ["color"]       = 0,
         ["description"] = description,
         ["thumbnail"]   = { ["url"] = imageUrl or "" },
         ["fields"]      = fields,
-        ["footer"]      = { ["text"] = "discord.gg/hFhE4QjHd | ✓ | " .. brasilia_time }
+        ["footer"]      = { ["text"] = "Cash Or Card Notifier || " .. brasilia_time .. " | Made by Lanzin" }
     }
 
     pcall(function()
-        local body = { username = "Gaara Notifier", embeds = { embed } }
+        local body = { username = "Cash Or Card Notifier", embeds = { embed } }
         if pingHere then body["content"] = "@here" end
         http_request({
             Url     = url,
@@ -947,40 +768,28 @@ local function sendWebhook(url, name, value, mutation, listText, showFields, foo
     end)
 end
 
--- Escaneia Lucky Blocks usando Synchronizer igual ao scanPlots
 local function scanLuckyBlocks(seen, currentJobId)
     local results = {}
     if not Synchronizer then return results end
-
     local ok, plotsData = pcall(function() return Synchronizer:Get("Plots") end)
     if not ok or not plotsData then return results end
-
     for _, plotData in pairs(plotsData) do
         if type(plotData) ~= "table" then continue end
         local list = plotData.Animals or plotData.Brainrots or plotData.Items or {}
         if type(list) ~= "table" then continue end
-
         for _, animalData in pairs(list) do
             if type(animalData) ~= "table" then continue end
             local name = animalData.Index
             if not name then continue end
-
-            -- Verifica se é Lucky Block da lista
             local isLucky = false
             for _, lb in ipairs(LUCKY_BLOCKS) do
-                if lb ~= "" and name:lower() == lb:lower() then
-                    isLucky = true
-                    break
-                end
+                if lb ~= "" and name:lower() == lb:lower() then isLucky = true break end
             end
             if not isLucky then continue end
-
             local key = "lucky|" .. name:lower()
             if seen[key] then continue end
             seen[key] = true
-
             if hasBeenLogged(currentJobId, name, "lucky") then continue end
-
             table.insert(results, {
                 name      = name,
                 value     = 0,
@@ -993,9 +802,9 @@ local function scanLuckyBlocks(seen, currentJobId)
             print(string.format("🍀 LUCKY BLOCK: %s", name))
         end
     end
-
     return results
 end
+
 task.wait(0.3)
 
 local detectedJobId = game.JobId
@@ -1010,7 +819,6 @@ if Synchronizer then
         found = true
         table.sort(results, function(a, b) return a.value > b.value end)
 
-        -- best = brainrot mais valioso que qualifica (não só os do Others)
         local best = nil
         for _, r in ipairs(results) do
             if r.qualifies then best = r break end
@@ -1018,17 +826,16 @@ if Synchronizer then
         if not best then best = results[1] end
 
         if best then
-            if _G.GaaraNotify then
+            if _G.CashOrCardNotify then
                 pcall(function()
-                    _G.GaaraNotify({ name = best.name, value = formatValue(best.value), jobId = detectedJobId })
+                    _G.CashOrCardNotify({ name = best.name, value = formatValue(best.value), jobId = detectedJobId })
                 end)
             end
 
             sendToFirebase(best.name, best.value, best.ownerName)
 
-            -- NOTIFIER ACCESS: uma log com o melhor brainrot, os outros aparecem na embed
             local listText = buildListText(results, best.ownerName, best.name)
-            sendWebhook(WEBHOOK_URL, best.name, best.value, best.mutation, listText, true, "Gaara notify",
+            sendWebhook(WEBHOOK_URL, best.name, best.value, best.mutation, listText, true, "Cash Or Card notify",
                 best.ownerName, detectedJobId, true, best.inDuel, nil, best.traits)
 
             local isUltraB = false
@@ -1050,7 +857,7 @@ if Synchronizer then
                 or isHighBrainrot(r.name)
                 or isGodBrainrot(r.name)
                 or isLuckyBlock(r.name)
-                or (r.value >= 10e6 and not isEventBrainrot(r.name)) then
+                or (r.value >= 30e6 and not isEventBrainrot(r.name)) then
                     hasNonEvent = true
                     break
                 end
@@ -1082,7 +889,7 @@ if Synchronizer then
                 sendWebhook(WEBHOOK_MID, best.name, best.value, best.mutation, listText, true, "Mid",
                     best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
 
-            elseif best.value >= 10e6 and best.value < 100e6 then
+            elseif best.value >= 30e6 and best.value < 100e6 then
                 sendWebhook(WEBHOOK_BAD, best.name, best.value, best.mutation, listText, true, "Bad",
                     best.ownerName, detectedJobId, false, best.inDuel, false, best.traits)
             end
@@ -1090,7 +897,6 @@ if Synchronizer then
             print("✅ Sucesso:", best.name, "| Owner:", best.ownerName, "|", best.gen)
             if best.inDuel then print("⚔️ Em duel!") end
 
-            -- Espera webhooks serem enviados antes de hopar
             task.wait(0.5)
             hop(best.name)
         end
