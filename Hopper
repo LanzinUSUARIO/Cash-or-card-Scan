@@ -634,6 +634,7 @@ local function getMutationPrefix(mutation)
     return "[" .. mutation:upper() .. "] "
 end
 
+-- Estilo Bob: emoji · Nome — $valor/s
 local function buildListText(results, targetOwner, skipName)
     local lines = {}
     local count = 0
@@ -642,9 +643,7 @@ local function buildListText(results, targetOwner, skipName)
         if count >= 20 then break end
         local rarityEmoji = getRarityEmoji(r.value)
         local mutEmojis   = getInlineMutEmojis(r.mutation, r.traits)
-        local line = "1x " .. rarityEmoji .. " " .. r.name
-        if mutEmojis ~= "" then line = line .. " " .. mutEmojis end
-        line = line .. " ($" .. formatValue(r.value) .. "/s)"
+        local line = rarityEmoji .. (mutEmojis ~= "" and " " .. mutEmojis or "") .. " · " .. r.name .. " — $" .. formatValue(r.value) .. "/s"
         if r.inDuel then line = line .. " ⚔️" end
         table.insert(lines, line)
         count = count + 1
@@ -677,7 +676,6 @@ local function sendWebhook(url, name, value, mutation, listText, showFields, foo
     local mutPrefix    = getMutationPrefix(mutation)
     local channelLabel = CHANNEL_NAMES[footer] or footer or "Notifier"
 
-    -- Emoji de raridade
     local rarityEmoji = getRarityEmoji(value)
 
     -- Emoji da mutação principal
@@ -711,41 +709,32 @@ local function sendWebhook(url, name, value, mutation, listText, showFields, foo
     end
     local traitEmojisStr = table.concat(traitEmojis, " ")
 
-    -- Nome estilo Bob: emoji · [MUT] Nome (traits)
+    -- Nome estilo Bob: rarityEmoji mutEmoji · [MUT] Nome traits
     local nameDisplay = rarityEmoji .. (mainMutEmoji ~= "" and " " .. mainMutEmoji or "") .. " · **" .. mutPrefix .. name .. "**"
     if traitEmojisStr ~= "" then nameDisplay = nameDisplay .. " " .. traitEmojisStr end
     if inDuel then nameDisplay = nameDisplay .. " ⚔️" end
 
-    -- Valor em linha separada
     local valueDisplay = "$" .. formatValue(value) .. "/s"
 
-    -- Others
     local othersText = ""
     if listText and listText ~= "" then
-        othersText = "\n\n**Others**\n" .. listText
+        othersText = "\n\n**Other**\n" .. listText
     end
 
     local description = nameDisplay .. "\n" .. valueDisplay .. othersText
 
-    -- Data/hora Brasília
     local brasilia_time = os.date("!%d de %B de %Y às %H:%M", os.time() - 3 * 3600)
 
+    -- Só Job ID e botão join, sem Owner/Bot
     local fields = {}
     table.insert(fields, {
-        ["name"]   = "Owner · Bot",
-        ["value"]  = "`" .. (ownerName or "?") .. "` · `" .. LocalPlayer.Name .. "`",
-        ["inline"] = true,
+        ["name"]  = "ID · Job ID",
+        ["value"] = "`" .. (jobId or CURRENT_JOB) .. "`",
     })
-    if includeJoinLink then
-        table.insert(fields, {
-            ["name"]  = "ID · Job ID",
-            ["value"] = "`" .. (jobId or CURRENT_JOB) .. "`",
-        })
-        table.insert(fields, {
-            ["name"]  = "​",
-            ["value"] = "[🔗 Click Here To Join!](" .. joinLink .. ")",
-        })
-    end
+    table.insert(fields, {
+        ["name"]  = "​",
+        ["value"] = "[🔗 Click Here To Join!](" .. joinLink .. ")",
+    })
 
     local embed = {
         ["title"]       = "Cash Or Card Notifier · " .. channelLabel,
