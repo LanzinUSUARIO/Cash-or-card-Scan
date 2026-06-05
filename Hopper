@@ -50,7 +50,7 @@ local EVENT_BRAINROTS = {
     "Matteooooooooooooooo", "Chicleteira Bicicleteira", "Bombardiro Crocodilo",
 }
 
-local BLACK_NAMES = {"Fishboard", "Tob Tobi Tobi", "Lucky Block", "La Vacca Saturno Saturnita", "Bombardiro Crocodilo", }
+local BLACK_NAMES = {"Fishboard", ""}
 
 local GOD_BRAINROTS = {
     "Tob Tobi Tobi", "Ganganzelli Trulala", "Brutto Gialutto", "Centrucci Nuclucci",
@@ -628,13 +628,15 @@ local function getTraitEmojis(traits)
     return table.concat(emojis, " ")
 end
 
-local function getRarityEmoji(value)
-    if value >= 1e9   then return "🔶" end
-    if value >= 500e6 then return "🟧" end
-    if value >= 100e6 then return "🟦" end
-    if value >= 50e6  then return "🟪" end
-    if value >= 10e6  then return "🔹" end
-    return ""
+-- Retorna emoji de tier sem usar Unicode problemático
+local function getTierEmoji(value, name)
+    if isUltra(name) or value >= 1e9  then return "🔶" end
+    if isHighBrainrot(name)           then return "🔷" end
+    if isGodBrainrot(name)            then return "🌟" end
+    if isLuckyBlock(name)             then return "🍀" end
+    if isEventBrainrot(name)          then return "🎉" end
+    if value >= 100e6                 then return "🟣" end
+    return "⚪"
 end
 
 local function buildListText(results, targetOwner, skipName)
@@ -643,15 +645,13 @@ local function buildListText(results, targetOwner, skipName)
     for _, r in ipairs(results) do
         if r.name == skipName then continue end
         if count >= 20 then break end
-        local rarityEmoji = getRarityEmoji(r.value)
-        local mutEmoji    = getMutationEmoji(r.mutation)
-        local traitStr    = getTraitEmojis(r.traits)
+        local mutEmoji  = getMutationEmoji(r.mutation)
+        local traitStr  = getTraitEmojis(r.traits)
+        local tierEmoji = getTierEmoji(r.value, r.name)
 
-        local line = mutEmoji
+        local line = tierEmoji .. " " .. mutEmoji
         if traitStr ~= "" then line = line .. " " .. traitStr end
-        line = line .. " · " .. r.name
-        if rarityEmoji ~= "" then line = line .. " " .. rarityEmoji end
-        line = line .. " — $" .. formatValue(r.value) .. "/s"
+        line = line .. " **" .. r.name .. "** — `$" .. formatValue(r.value) .. "/s`"
         if r.inDuel then line = line .. " ⚔️" end
 
         table.insert(lines, line)
@@ -684,41 +684,46 @@ local function sendWebhook(url, name, value, mutation, listText, showFields, foo
     local joinLink     = "https://liphyrdev.github.io/notifier/?placeId=109983668079237&gameInstanceId=" .. (jobId or CURRENT_JOB)
     local channelLabel = CHANNEL_NAMES[footer] or footer or "Notifier"
 
-    local rarityEmoji = getRarityEmoji(value)
-    local mutEmoji    = getMutationEmoji(mutation)
-    local traitStr    = getTraitEmojis(traits)
+    local mutEmoji  = getMutationEmoji(mutation)
+    local traitStr  = getTraitEmojis(traits)
+    local tierEmoji = getTierEmoji(value, name)
 
-    -- Linha do nome: MutEmoji · Nome RarityEmoji ⚔️
-    local nameDisplay = mutEmoji .. " · **" .. name .. "**"
-    if rarityEmoji ~= "" then nameDisplay = nameDisplay .. " " .. rarityEmoji end
+    -- Linha do nome principal
+    local nameDisplay = tierEmoji .. " " .. mutEmoji .. " **" .. name .. "**"
     if inDuel then nameDisplay = nameDisplay .. " ⚔️" end
 
-    -- Traits em linha separada
-    local traitLine = (traitStr ~= "" and "\n" .. traitStr or "")
+    -- Traits em bloco quote
+    local traitLine = (traitStr ~= "" and ("\n> " .. traitStr) or "")
 
-    -- Valor
-    local valueDisplay = "\n$" .. formatValue(value) .. "/s"
+    -- Valor em destaque (heading do Discord)
+    local valueDisplay = "\n### `$" .. formatValue(value) .. "/s`"
 
-    -- Others (só mostra se tiver conteúdo)
+    -- Dono
+    local ownerLine = "\n👤 **Owner:** `" .. (ownerName or "?") .. "`"
+
+    -- Others com separador visual
     local othersText = ""
     if listText and listText ~= "" then
-        othersText = "\n\n**Others**\n" .. listText
+        othersText = "\n\n─────────────────\n**Others in server**\n" .. listText
     end
 
-    local description = nameDisplay .. traitLine .. valueDisplay .. othersText
+    local description = nameDisplay .. traitLine .. valueDisplay .. ownerLine .. othersText
 
     -- Data/hora Brasília
-    local brasilia_time = os.date("!%d de %B de %Y às %H:%M", os.time() - 3 * 3600)
+    local brasilia_time = os.date("!%d/%m/%Y %H:%M", os.time() - 3 * 3600)
 
     local fields = {}
     if includeJoinLink then
+        -- Job ID bem destacado com emoji customizado
         table.insert(fields, {
-            ["name"]  = "Job ID",
-            ["value"] = "`" .. (jobId or CURRENT_JOB) .. "`",
+            ["name"]   = "<:id2:1502543195488256160> Job ID",
+            ["value"]  = "```\n" .. (jobId or CURRENT_JOB) .. "\n```",
+            ["inline"] = false,
         })
         table.insert(fields, {
-            ["name"]  = "​",
-            ["value"] = "[🔗 Click Here To Join!](" .. joinLink .. ")",
+            ["name"]   = "🔗 Join",
+            ["value"]  = "[**Click Here To Join the Server!**](" .. joinLink .. ")",
+            ["inline"] = false,
         })
     end
 
@@ -727,7 +732,9 @@ local function sendWebhook(url, name, value, mutation, listText, showFields, foo
         ["color"]       = EMBED_COLOR,
         ["description"] = description,
         ["fields"]      = fields,
-        ["footer"]      = { ["text"] = "Cash Or Card Notifier || " .. brasilia_time .. " | Made by Lanzin" },
+        ["footer"]      = {
+            ["text"] = "Cash Or Card Notifier  •  " .. brasilia_time .. "  •  Made by Lanzin"
+        },
     }
 
     if imageUrl and imageUrl ~= "" then
