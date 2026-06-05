@@ -44,6 +44,30 @@ local HIGH_BRAINROTS = {
     "La Secret Combinasion", "Los Sekolahs",
 }
 
+local EVENT_BRAINROTS = {
+    "Dul Dul Dul", "Guerriro Digitale", "Orcalero Orcala",
+    "La Vacca Saturno Saturnita", "1x1x1x1", "Sammyni Spyderini",
+    "Matteooooooooooooooo", "Chicleteira Bicicleteira", "Bombardiro Crocodilo",
+}
+
+local BLACK_NAMES = {"Fishboard", ""}
+
+local GOD_BRAINROTS = {
+    "Tob Tobi Tobi", "Ganganzelli Trulala", "Brutto Gialutto", "Centrucci Nuclucci",
+    "Rhino Helicopterino", "Trenostruzzo Turbo 4000", "Ginger Cisterna",
+    "Las Capuchinas", "Avocadorilla", "Fragola La La La", "Doi Doi Do",
+    "Pineaplino", "Racooni Jandelini", "Raccooni Jandelini", "Fishino Clownino",
+    "Gobblino Uniciclino", "Stoppo Luminino", "Unclito Samito",
+}
+
+local LUCKY_BLOCKS = {
+    "Lucky Block", "Admin Lucky Block", "Los Lucky Blocks", "Taco Lucky Block",
+    "Los Taco Blocks", "Spooky Lucky Block", "Festive Lucky Block",
+    "Heart Lucky Block", "Leprechaun Lucky Block", "Egg Lucky Block",
+    "Hydra Bunny Lucky Block", "Hopilikalikako Lucky Block",
+    "Hopilikalika Hopilikalako Lucky Block",
+}
+
 local MIN_VALUE     = 30000000
 local NOTIFIER_NAME = "cashOrCard"
 local CURRENT_JOB   = tostring(game.JobId)
