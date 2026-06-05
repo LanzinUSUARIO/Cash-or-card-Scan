@@ -50,7 +50,7 @@ local EVENT_BRAINROTS = {
     "Matteooooooooooooooo", "Chicleteira Bicicleteira", "Bombardiro Crocodilo",
 }
 
-local BLACK_NAMES = {"Fishboard", "Tob Tobi Tobi", "Lucky Block", "La Vacca Saturno Saturnita", "Bombardiro Crocodilo", }
+local BLACK_NAMES = {"Fishboard", "Tob Tobi Tobi", "Lucky Block", "La Vacca Saturno Saturnita", "Bombardiro Crocodilo", "Sammyni Spyderini", }
 
 local GOD_BRAINROTS = {
     "Tob Tobi Tobi", "Ganganzelli Trulala", "Brutto Gialutto", "Centrucci Nuclucci",
