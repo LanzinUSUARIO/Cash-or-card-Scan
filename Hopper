@@ -58,7 +58,7 @@ local EVENT_BRAINROTS = {
 }
 local BLACK_NAMES = {
     "Fishboard", "Tob Tobi Tobi", "Lucky Block", "La Vacca Saturno Saturnita",
-    "Bombardiro Crocodilo", "Sammyni Spyderini", "Dul Dul Dul", "Guerriro Digitale", "Orcalero Orcala", "Avocadorilla",
+    "Bombardiro Crocodilo", "Sammyni Spyderini", "Dul Dul Dul", "Guerriro Digitale", "Orcalero Orcala", "Avocadorilla", "Los Taco Blocks",
 }
 local GOD_BRAINROTS = {
     "Tob Tobi Tobi", "Ganganzelli Trulala", "Brutto Gialutto", "Centrucci Nuclucci",
